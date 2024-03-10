@@ -16,6 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public class MegaEvolveInBattleCommand implements Command<ServerCommandSource> {
 
@@ -38,7 +40,10 @@ public class MegaEvolveInBattleCommand implements Command<ServerCommandSource> {
         if (battlePokemon == null) return 0;
 
         Pokemon pokemon = battlePokemon.getEffectedPokemon();
-        if (!pokemon.getSpecies().getFeatures().contains(DataKeys.MEGA_SPECIES_FEATURE)) {
+
+        if (Stream.of(DataKeys.MEGA, DataKeys.MEGA_X, DataKeys.MEGA_Y)
+            .noneMatch(aspect -> pokemon.getSpecies().getFeatures().contains(aspect))
+        ) {
             context.getSource().sendError(Text.literal("This Pokémon has no Mega form."));
             return -1;
         }

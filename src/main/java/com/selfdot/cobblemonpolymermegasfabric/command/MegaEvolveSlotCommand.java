@@ -14,11 +14,11 @@ public class MegaEvolveSlotCommand implements Command<ServerCommandSource> {
     @Override
     public int run(CommandContext<ServerCommandSource> context) {
         Pokemon pokemon = PartySlotArgumentType.Companion.getPokemon(context, "pokemon");
-        if (!pokemon.getSpecies().getFeatures().contains(DataKeys.MEGA_SPECIES_FEATURE)) {
+        if (!pokemon.getSpecies().getFeatures().contains(DataKeys.MEGA)) {
             context.getSource().sendError(Text.literal("This Pokémon has no Mega form"));
             return -1;
         }
-        new FlagSpeciesFeature(DataKeys.MEGA_SPECIES_FEATURE, true).apply(pokemon);
+        new FlagSpeciesFeature(DataKeys.MEGA, true).apply(pokemon);
         return SINGLE_SUCCESS;
     }
 

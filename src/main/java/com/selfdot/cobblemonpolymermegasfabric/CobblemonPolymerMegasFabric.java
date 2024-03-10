@@ -46,16 +46,20 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
         CobblemonEvents.BATTLE_VICTORY.subscribe(Priority.NORMAL, this::onBattleVictory);
     }
 
+    private static void registerAspectProvider(String aspect) {
+        SpeciesFeatures.INSTANCE.register(aspect, new FlagSpeciesFeatureProvider(List.of(aspect), false));
+    }
+
     private void onServerStarting(MinecraftServer server) {
-        SpeciesFeatures.INSTANCE.register(
-            DataKeys.MEGA_SPECIES_FEATURE,
-            new FlagSpeciesFeatureProvider(List.of(DataKeys.MEGA_SPECIES_FEATURE), false)
-        );
+        registerAspectProvider(DataKeys.MEGA);
+        registerAspectProvider(DataKeys.MEGA_X);
+        registerAspectProvider(DataKeys.MEGA_Y);
         for (Species species : PokemonSpecies.INSTANCE.getSpecies()) {
-            if (species.getForms().stream().anyMatch(
-                form -> form.getName().equalsIgnoreCase(DataKeys.MEGA_SPECIES_FEATURE)
-            )) {
-                species.getFeatures().add(DataKeys.MEGA_SPECIES_FEATURE);
+            if (species.getForms().stream().anyMatch(form -> form.getName().equalsIgnoreCase(DataKeys.MEGA))) {
+                species.getFeatures().add(DataKeys.MEGA);
+            } else if (species.getForms().stream().anyMatch(form -> form.getName().equalsIgnoreCase(DataKeys.MEGA_X))) {
+                species.getFeatures().add(DataKeys.MEGA_X);
+                species.getFeatures().add(DataKeys.MEGA_Y);
             }
         }
         MegaStoneHeldItemManager.getInstance().loadMegaStoneIds();
@@ -65,8 +69,11 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
     private static void deMegaEvolveAll(PokemonBattle battle) {
         battle.getActors().forEach(
             actor -> actor.getPokemonList().forEach(
-                battlePokemon -> new FlagSpeciesFeature(DataKeys.MEGA_SPECIES_FEATURE, false)
-                    .apply(battlePokemon.getOriginalPokemon())
+                battlePokemon -> {
+                    new FlagSpeciesFeature(DataKeys.MEGA, false).apply(battlePokemon.getOriginalPokemon());
+                    new FlagSpeciesFeature(DataKeys.MEGA_X, false).apply(battlePokemon.getOriginalPokemon());
+                    new FlagSpeciesFeature(DataKeys.MEGA_Y, false).apply(battlePokemon.getOriginalPokemon());
+                }
             )
         );
     }

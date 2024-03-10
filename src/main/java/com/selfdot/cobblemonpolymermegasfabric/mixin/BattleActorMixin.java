@@ -37,15 +37,17 @@ public abstract class BattleActorMixin {
             BATTLE_MEGA_EVOLVE.remove(uuid);
             if (responses.size() != 1) return;
             if (!(responses.get(0) instanceof MoveActionResponse moveActionResponse)) return;
-            moveActionResponse.setGimmickID(ShowdownMoveset.Gimmick.MEGA_EVOLUTION.getId());
-
             if (activePokemon.size() != 1) return;
             BattlePokemon battlePokemon = activePokemon.get(0).getBattlePokemon();
             if (battlePokemon == null) return;
-            new FlagSpeciesFeature(DataKeys.MEGA_SPECIES_FEATURE, true)
-                .apply(battlePokemon.getOriginalPokemon());
-            new FlagSpeciesFeature(DataKeys.MEGA_SPECIES_FEATURE, true)
-                .apply(battlePokemon.getEffectedPokemon());
+            String megaStone = battlePokemon.getHeldItemManager().showdownId(battlePokemon);
+            if (megaStone == null) return;
+            String megaType = DataKeys.MEGA;
+            if      (megaStone.endsWith("-x")) megaType = DataKeys.MEGA_X;
+            else if (megaStone.endsWith("-y")) megaType = DataKeys.MEGA_Y;
+            new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getOriginalPokemon());
+            new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getEffectedPokemon());
+            moveActionResponse.setGimmickID(ShowdownMoveset.Gimmick.MEGA_EVOLUTION.getId());
         }
     }
 
