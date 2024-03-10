@@ -18,6 +18,7 @@ repositories {
     mavenCentral()
     maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
     maven("https://maven.impactdev.net/repository/development/")
+    maven("https://maven.nucleoid.xyz")
     maven {
         name = "Modrinth"
         url = uri("https://api.modrinth.com/maven")
@@ -50,6 +51,8 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.0")
 
     compileOnly("net.luckperms:api:5.4")
+
+    modImplementation("eu.pb4:polymer-core:0.5.19+1.20.1")
 }
 
 tasks.getByName<Test>("test") {
