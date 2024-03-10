@@ -1,12 +1,14 @@
 package com.selfdot.cobblemonpolymermegasfabric.command;
 
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
+import com.cobblemon.mod.common.api.battles.model.actor.BattleActor;
 import com.cobblemon.mod.common.api.pokemon.feature.FlagSpeciesFeature;
 import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.command.argument.PartySlotArgumentType;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import com.selfdot.cobblemonpolymermegasfabric.CobblemonPolymerMegasFabric;
 import com.selfdot.cobblemonpolymermegasfabric.DataKeys;
 import com.selfdot.cobblemonpolymermegasfabric.util.MegaUtils;
 import net.minecraft.nbt.NbtCompound;
@@ -20,12 +22,6 @@ public class MegaEvolveSlotCommand implements Command<ServerCommandSource> {
     public int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null) return 0;
-
-        PokemonBattle battle = BattleRegistry.INSTANCE.getBattleByParticipatingPlayer(player);
-        if (battle != null) {
-            context.getSource().sendError(Text.literal("This cannot be used in battle."));
-            return -1;
-        }
 
         Pokemon pokemon = PartySlotArgumentType.Companion.getPokemon(context, "pokemon");
 
@@ -46,10 +42,20 @@ public class MegaEvolveSlotCommand implements Command<ServerCommandSource> {
                 DataKeys.MEGA_X : DataKeys.MEGA_Y;
         }
 
-        new FlagSpeciesFeature(megaType, true).apply(pokemon);
-        context.getSource().sendMessage(Text.literal(
-            pokemon.getDisplayName().getString() + " has mega evolved!"
-        ));
+        PokemonBattle battle = BattleRegistry.INSTANCE.getBattleByParticipatingPlayer(player);
+        if (battle == null) {
+            new FlagSpeciesFeature(megaType, true).apply(pokemon);
+            context.getSource().sendMessage(Text.literal(
+                pokemon.getDisplayName().getString() + " has mega evolved!"
+            ));
+        } else {
+            BattleActor battleActor = battle.getActor(player);
+            if (battleActor == null) return 0;
+            CobblemonPolymerMegasFabric.getInstance().getToMegaEvolveThisTurn().add(battleActor.getUuid());
+            context.getSource().sendMessage(Text.literal(
+                pokemon.getDisplayName().getString() + " will mega evolve this turn if a move is used."
+            ));
+        }
         return SINGLE_SUCCESS;
     }
 
