@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class MegaStoneHeldItemManager implements HeldItemManager {
 
@@ -106,6 +107,10 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
         String showdownId = showdownId(pokemon);
         if (showdownId == null) return false;
         return MEGA_STONE_IDS.get(showdownId).equals(pokemon.getSpecies());
+    }
+
+    public Set<String> getAllMegaStoneIds() {
+        return MEGA_STONE_IDS.keySet();
     }
 
     public void loadMegaStoneIds() {
