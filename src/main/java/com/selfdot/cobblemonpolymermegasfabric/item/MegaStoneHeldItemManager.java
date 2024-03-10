@@ -33,7 +33,12 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
         if (nbt == null) nbt = new NbtCompound();
         nbt.putString(DataKeys.NBT_KEY_MEGA_STONE, id);
         megaStone.setNbt(nbt);
-        megaStone.setCustomName(Text.literal(id.substring(0, 1).toUpperCase() + id.substring(1)));
+        String displayName = id.substring(0, 1).toUpperCase() + id.substring(1);
+        if (displayName.endsWith("x") || displayName.endsWith("y")) {
+            displayName = displayName.substring(0, id.length() - 1) +
+                displayName.substring(id.length() - 1).toUpperCase();
+        }
+        megaStone.setCustomName(Text.literal(displayName));
         return megaStone;
     }
 
