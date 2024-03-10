@@ -16,7 +16,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class MegaEvolveInBattleCommand implements Command<ServerCommandSource> {
@@ -25,6 +24,11 @@ public class MegaEvolveInBattleCommand implements Command<ServerCommandSource> {
     public int run(CommandContext<ServerCommandSource> context) {
         ServerPlayerEntity player = context.getSource().getPlayer();
         if (player == null) return 0;
+
+        if (CobblemonPolymerMegasFabric.getInstance().getHasMegaEvolvedThisBattle().contains(player.getUuid())) {
+            context.getSource().sendError(Text.literal("Mega evolution can only be used once per battle."));
+            return -1;
+        }
 
         PokemonBattle battle = BattleRegistry.INSTANCE.getBattleByParticipatingPlayer(player);
         if (battle == null) {
@@ -51,7 +55,7 @@ public class MegaEvolveInBattleCommand implements Command<ServerCommandSource> {
             context.getSource().sendError(Text.literal("This Pokémon is not holding their Mega Stone."));
             return -1;
         }
-        CobblemonPolymerMegasFabric.getInstance().getBattleMegaEvolve().add(playerBattleActor.getUuid());
+        CobblemonPolymerMegasFabric.getInstance().getToMegaEvolveThisTurn().add(playerBattleActor.getUuid());
         context.getSource().sendMessage(Text.literal(
             pokemon.getDisplayName().getString() + " will mega evolve this turn if a move is used."
         ));

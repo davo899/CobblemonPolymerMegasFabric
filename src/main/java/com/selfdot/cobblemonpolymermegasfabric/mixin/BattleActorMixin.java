@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Mixin(BattleActor.class)
@@ -31,10 +30,8 @@ public abstract class BattleActorMixin {
 
     @Inject(method = "writeShowdownResponse", at = @At("HEAD"), remap = false)
     private void injectWriteShowdownResponse(CallbackInfo ci) {
-        Set<UUID> BATTLE_MEGA_EVOLVE = CobblemonPolymerMegasFabric.getInstance().getBattleMegaEvolve();
         UUID uuid = getUuid();
-        if (BATTLE_MEGA_EVOLVE.contains(uuid)) {
-            BATTLE_MEGA_EVOLVE.remove(uuid);
+        if (CobblemonPolymerMegasFabric.getInstance().getToMegaEvolveThisTurn().remove(uuid)) {
             if (responses.size() != 1) return;
             if (!(responses.get(0) instanceof MoveActionResponse moveActionResponse)) return;
             if (activePokemon.size() != 1) return;
@@ -48,6 +45,7 @@ public abstract class BattleActorMixin {
             new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getOriginalPokemon());
             new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getEffectedPokemon());
             moveActionResponse.setGimmickID(ShowdownMoveset.Gimmick.MEGA_EVOLUTION.getId());
+            CobblemonPolymerMegasFabric.getInstance().getHasMegaEvolvedThisBattle().add(uuid);
         }
     }
 

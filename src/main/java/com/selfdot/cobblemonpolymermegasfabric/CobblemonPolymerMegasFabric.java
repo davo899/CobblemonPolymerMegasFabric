@@ -31,10 +31,15 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
         return INSTANCE;
     }
 
-    private final Set<UUID> BATTLE_MEGA_EVOLVE = new HashSet<>();
+    private final Set<UUID> TO_MEGA_EVOLVE_THIS_TURN = new HashSet<>();
+    private final Set<UUID> HAS_MEGA_EVOLVED_THIS_BATTLE = new HashSet<>();
 
-    public Set<UUID> getBattleMegaEvolve() {
-        return BATTLE_MEGA_EVOLVE;
+    public Set<UUID> getToMegaEvolveThisTurn() {
+        return TO_MEGA_EVOLVE_THIS_TURN;
+    }
+
+    public Set<UUID> getHasMegaEvolvedThisBattle() {
+        return HAS_MEGA_EVOLVED_THIS_BATTLE;
     }
 
     @Override
@@ -85,6 +90,7 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
 
     private Unit onBattleVictory(BattleVictoryEvent event) {
         deMegaEvolveAll(event.getBattle());
+        event.getBattle().getActors().forEach(actor -> getHasMegaEvolvedThisBattle().remove(actor.getUuid()));
         return Unit.INSTANCE;
     }
 
