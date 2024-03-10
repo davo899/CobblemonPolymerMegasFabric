@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.selfdot.cobblemonpolymermegasfabric.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "minVersion": "0.8",
+  "client": [],
+  "mixins": [
+    "BattleActorMixin",
+    "GraalShowdownServiceMixin",
+    "ShowdownSpeciesMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

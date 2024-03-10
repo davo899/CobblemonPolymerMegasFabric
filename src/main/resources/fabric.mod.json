@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "cobblemonpolymermegasfabric",
+  "version": "${version}",
+  "name": "CobblemonPolymerMegasFabric",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "https://github.com/theep/CobblemonPolymerMegasFabric"
+  },
+  "license": "All-Rights-Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.selfdot.cobblemonpolymermegasfabric.CobblemonPolymerMegasFabric"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.14.23",
+    "fabric": "*",
+    "minecraft": "1.20.1"
+  },
+  "mixins": [
+    "mixins.cobblemonpolymermegas.json"
+  ]
+}
