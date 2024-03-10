@@ -8,6 +8,8 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
 import com.selfdot.cobblemonpolymermegasfabric.DataKeys;
+import com.selfdot.cobblemonpolymermegasfabric.util.MegaUtils;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -26,11 +28,28 @@ public class MegaEvolveSlotCommand implements Command<ServerCommandSource> {
         }
 
         Pokemon pokemon = PartySlotArgumentType.Companion.getPokemon(context, "pokemon");
-        if (!pokemon.getSpecies().getFeatures().contains(DataKeys.MEGA)) {
-            context.getSource().sendError(Text.literal("This Pokémon has no Mega form."));
+
+        String reasonCannotMegaEvolve = MegaUtils.reasonCannotMegaEvolve(player, pokemon);
+        if (reasonCannotMegaEvolve != null) {
+            context.getSource().sendError(Text.literal(reasonCannotMegaEvolve));
             return -1;
         }
-        new FlagSpeciesFeature(DataKeys.MEGA, true).apply(pokemon);
+
+        String megaType = DataKeys.MEGA;
+        if (
+            pokemon.getSpecies().getName().equalsIgnoreCase("charizard") ||
+                pokemon.getSpecies().getName().equalsIgnoreCase("mewtwo")
+        ) {
+            NbtCompound nbtCompound = pokemon.heldItem().getNbt();
+            if (nbtCompound == null) return 0;
+            megaType = nbtCompound.getString(DataKeys.NBT_KEY_MEGA_STONE).endsWith("x") ?
+                DataKeys.MEGA_X : DataKeys.MEGA_Y;
+        }
+
+        new FlagSpeciesFeature(megaType, true).apply(pokemon);
+        context.getSource().sendMessage(Text.literal(
+            pokemon.getDisplayName().getString() + " has mega evolved!"
+        ));
         return SINGLE_SUCCESS;
     }
 

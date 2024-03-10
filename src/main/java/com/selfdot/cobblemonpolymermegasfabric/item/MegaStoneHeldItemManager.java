@@ -5,7 +5,9 @@ import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
 import com.cobblemon.mod.common.api.pokemon.helditem.HeldItemManager;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
+import com.selfdot.cobblemonpolymermegasfabric.DataKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -29,7 +31,7 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
         ItemStack megaStone = new ItemStack(Items.EMERALD);
         NbtCompound nbt = megaStone.getNbt();
         if (nbt == null) nbt = new NbtCompound();
-        nbt.putString("megaStone", id);
+        nbt.putString(DataKeys.NBT_KEY_MEGA_STONE, id);
         megaStone.setNbt(nbt);
         megaStone.setCustomName(Text.literal(id.substring(0, 1).toUpperCase() + id.substring(1)));
         return megaStone;
@@ -69,15 +71,19 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
         return false;
     }
 
+    private String showdownId(Pokemon pokemon) {
+        ItemStack itemStack = pokemon.heldItem();
+        NbtCompound nbt = itemStack.getNbt();
+        if (nbt == null) return null;
+        String id = nbt.getString(DataKeys.NBT_KEY_MEGA_STONE);
+        if (!MEGA_STONE_IDS.containsKey(id)) return null;
+        return id;
+    }
+
     @Nullable
     @Override
     public String showdownId(@NotNull BattlePokemon battlePokemon) {
-        ItemStack itemStack = battlePokemon.getEffectedPokemon().heldItem();
-        NbtCompound nbt = itemStack.getNbt();
-        if (nbt == null) return null;
-        String id = nbt.getString("megaStone");
-        if (!MEGA_STONE_IDS.containsKey(id)) return null;
-        return id;
+        return showdownId(battlePokemon.getEffectedPokemon());
     }
 
     @Override
@@ -90,13 +96,11 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
         return PokemonSpecies.INSTANCE.getByName(name);
     }
 
-    public boolean isHoldingValidMegaStone(BattlePokemon battlePokemon) {
-        if (battlePokemon.getEffectedPokemon().getSpecies().getName().equalsIgnoreCase("rayquaza")) {
-            return true;
-        }
-        String showdownId = showdownId(battlePokemon);
+    public boolean isHoldingValidMegaStone(Pokemon pokemon) {
+        if (pokemon.getSpecies().getName().equalsIgnoreCase("rayquaza")) return true;
+        String showdownId = showdownId(pokemon);
         if (showdownId == null) return false;
-        return MEGA_STONE_IDS.get(showdownId).equals(battlePokemon.getEffectedPokemon().getSpecies());
+        return MEGA_STONE_IDS.get(showdownId).equals(pokemon.getSpecies());
     }
 
     public void loadMegaStoneIds() {
