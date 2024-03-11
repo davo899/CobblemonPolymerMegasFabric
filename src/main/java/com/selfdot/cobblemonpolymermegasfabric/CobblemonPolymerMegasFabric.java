@@ -13,6 +13,7 @@ import com.cobblemon.mod.common.api.pokemon.helditem.HeldItemProvider;
 import com.cobblemon.mod.common.pokemon.Species;
 import com.selfdot.cobblemonpolymermegasfabric.command.CommandTree;
 import com.selfdot.cobblemonpolymermegasfabric.item.MegaStoneHeldItemManager;
+import com.selfdot.cobblemonpolymermegasfabric.util.MegaUtils;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import kotlin.Unit;
@@ -48,7 +49,6 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
         CommandRegistrationEvent.EVENT.register(CommandTree::register);
         LifecycleEvent.SERVER_STARTING.register(this::onServerStarting);
         CobblemonEvents.BATTLE_STARTED_PRE.subscribe(Priority.NORMAL, this::onBattleStartedPre);
-        CobblemonEvents.BATTLE_VICTORY.subscribe(Priority.NORMAL, this::onBattleVictory);
     }
 
     private static void registerAspectProvider(String aspect) {
@@ -71,26 +71,8 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
         HeldItemProvider.INSTANCE.register(MegaStoneHeldItemManager.getInstance(), Priority.HIGH);
     }
 
-    private static void deMegaEvolveAll(PokemonBattle battle) {
-        battle.getActors().forEach(
-            actor -> actor.getPokemonList().forEach(
-                battlePokemon -> {
-                    new FlagSpeciesFeature(DataKeys.MEGA, false).apply(battlePokemon.getOriginalPokemon());
-                    new FlagSpeciesFeature(DataKeys.MEGA_X, false).apply(battlePokemon.getOriginalPokemon());
-                    new FlagSpeciesFeature(DataKeys.MEGA_Y, false).apply(battlePokemon.getOriginalPokemon());
-                }
-            )
-        );
-    }
-
     private Unit onBattleStartedPre(BattleStartedPreEvent event) {
-        deMegaEvolveAll(event.getBattle());
-        return Unit.INSTANCE;
-    }
-
-    private Unit onBattleVictory(BattleVictoryEvent event) {
-        deMegaEvolveAll(event.getBattle());
-        event.getBattle().getActors().forEach(actor -> getHasMegaEvolvedThisBattle().remove(actor.getUuid()));
+        MegaUtils.deMegaEvolveAll(event.getBattle());
         return Unit.INSTANCE;
     }
 

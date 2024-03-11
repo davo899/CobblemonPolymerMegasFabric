@@ -2,6 +2,7 @@ package com.selfdot.cobblemonpolymermegasfabric.util;
 
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
 import com.cobblemon.mod.common.api.battles.model.actor.BattleActor;
+import com.cobblemon.mod.common.api.pokemon.feature.FlagSpeciesFeature;
 import com.cobblemon.mod.common.battles.ActiveBattlePokemon;
 import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
@@ -47,6 +48,18 @@ public class MegaUtils {
         }
 
         return null;
+    }
+
+    public static void deMegaEvolveAll(PokemonBattle battle) {
+        battle.getActors().forEach(
+            actor -> actor.getPokemonList().forEach(
+                battlePokemon -> {
+                    new FlagSpeciesFeature(DataKeys.MEGA, false).apply(battlePokemon.getOriginalPokemon());
+                    new FlagSpeciesFeature(DataKeys.MEGA_X, false).apply(battlePokemon.getOriginalPokemon());
+                    new FlagSpeciesFeature(DataKeys.MEGA_Y, false).apply(battlePokemon.getOriginalPokemon());
+                }
+            )
+        );
     }
 
 }

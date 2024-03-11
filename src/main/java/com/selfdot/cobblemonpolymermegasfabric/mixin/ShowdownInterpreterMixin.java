@@ -22,28 +22,26 @@ public abstract class ShowdownInterpreterMixin {
     private void injectDetailsChangeChangeInstruction(
         PokemonBattle battle, BattleMessage message, List<String> remainingLines, CallbackInfo ci
     ) {
-        //formName = message.argumentAt(1)?.split(',')?.get(0)?.substringAfter('-')?.lowercase() ?: return
         String s1 = message.argumentAt(1);
         if (s1 == null) return;
         String[] s2 = s1.split(",");
         if (s2.length == 0) return;
         String[] s3 = s2[0].split("-");
         if (s3.length < 2) return;
-        String formName = s3[1].toLowerCase();
-        LogUtils.getLogger().info(formName);
-
-        BattlePokemon battlePokemon = message.getBattlePokemon(0, battle);
-        if (battlePokemon == null) return;
-        String megaStone = battlePokemon.getHeldItemManager().showdownId(battlePokemon);
-        if (megaStone == null) return;
-        battle.dispatchGo(() -> {
-            String megaType = DataKeys.MEGA;
-            if      (megaStone.endsWith("x")) megaType = DataKeys.MEGA_X;
-            else if (megaStone.endsWith("y")) megaType = DataKeys.MEGA_Y;
-            new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getOriginalPokemon());
-            new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getEffectedPokemon());
-            return Unit.INSTANCE;
-        });
+        if (s3[1].equalsIgnoreCase(DataKeys.MEGA)) {
+            BattlePokemon battlePokemon = message.getBattlePokemon(0, battle);
+            if (battlePokemon == null) return;
+            String megaStone = battlePokemon.getHeldItemManager().showdownId(battlePokemon);
+            if (megaStone == null) return;
+            battle.dispatchGo(() -> {
+                String megaType = DataKeys.MEGA;
+                if      (megaStone.endsWith("x")) megaType = DataKeys.MEGA_X;
+                else if (megaStone.endsWith("y")) megaType = DataKeys.MEGA_Y;
+                new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getOriginalPokemon());
+                new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getEffectedPokemon());
+                return Unit.INSTANCE;
+            });
+        }
     }
 
 }
