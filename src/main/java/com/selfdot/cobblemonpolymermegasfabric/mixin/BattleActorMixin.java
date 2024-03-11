@@ -39,11 +39,6 @@ public abstract class BattleActorMixin {
             if (battlePokemon == null) return;
             String megaStone = battlePokemon.getHeldItemManager().showdownId(battlePokemon);
             if (megaStone == null) return;
-            String megaType = DataKeys.MEGA;
-            if      (megaStone.endsWith("x")) megaType = DataKeys.MEGA_X;
-            else if (megaStone.endsWith("y")) megaType = DataKeys.MEGA_Y;
-            new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getOriginalPokemon());
-            new FlagSpeciesFeature(megaType, true).apply(battlePokemon.getEffectedPokemon());
             moveActionResponse.setGimmickID(ShowdownMoveset.Gimmick.MEGA_EVOLUTION.getId());
             CobblemonPolymerMegasFabric.getInstance().getHasMegaEvolvedThisBattle().add(uuid);
         }
