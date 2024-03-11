@@ -4,6 +4,7 @@ import com.cobblemon.mod.common.command.argument.PartySlotArgumentType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.selfdot.cobblemonpolymermegasfabric.CobblemonPolymerMegasFabric;
 import com.selfdot.cobblemonpolymermegasfabric.item.MegaStoneHeldItemManager;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
@@ -33,7 +34,11 @@ public class CommandTree {
             .then(RequiredArgumentBuilder.<ServerCommandSource, String>
                 argument("megaStone", string())
                 .suggests((context, builder) -> {
-                    MegaStoneHeldItemManager.getInstance().getAllMegaStoneIds().forEach(builder::suggest);
+                    MegaStoneHeldItemManager.getInstance().getAllMegaStoneIds().stream()
+                        .filter(id ->
+                            CobblemonPolymerMegasFabric.getInstance().getConfig().getMegaStoneWhitelist().contains(id)
+                        )
+                        .forEach(builder::suggest);
                     return builder.buildFuture();
                 })
                 .executes(new GetMegaStoneCommand())

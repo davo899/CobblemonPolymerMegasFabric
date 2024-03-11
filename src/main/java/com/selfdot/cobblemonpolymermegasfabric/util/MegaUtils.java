@@ -29,6 +29,12 @@ public class MegaUtils {
             return "This Pokémon is not holding their Mega Stone.";
         }
 
+        if (!CobblemonPolymerMegasFabric.getInstance().getConfig().getMegaStoneWhitelist().contains(
+            MegaStoneHeldItemManager.getInstance().showdownId(pokemon)
+        )) {
+            return "This mega stone cannot be used on this server.";
+        }
+
         PokemonBattle battle = BattleRegistry.INSTANCE.getBattleByParticipatingPlayer(player);
         if (battle == null) return null;
 

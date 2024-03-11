@@ -1,12 +1,9 @@
 package com.selfdot.cobblemonpolymermegasfabric;
 
 import com.cobblemon.mod.common.api.Priority;
-import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
 import com.cobblemon.mod.common.api.events.CobblemonEvents;
 import com.cobblemon.mod.common.api.events.battles.BattleStartedPreEvent;
-import com.cobblemon.mod.common.api.events.battles.BattleVictoryEvent;
 import com.cobblemon.mod.common.api.pokemon.PokemonSpecies;
-import com.cobblemon.mod.common.api.pokemon.feature.FlagSpeciesFeature;
 import com.cobblemon.mod.common.api.pokemon.feature.FlagSpeciesFeatureProvider;
 import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures;
 import com.cobblemon.mod.common.api.pokemon.helditem.HeldItemProvider;
@@ -14,24 +11,22 @@ import com.cobblemon.mod.common.pokemon.Species;
 import com.selfdot.cobblemonpolymermegasfabric.command.CommandTree;
 import com.selfdot.cobblemonpolymermegasfabric.item.MegaStoneHeldItemManager;
 import com.selfdot.cobblemonpolymermegasfabric.item.MegaStoneItem;
+import com.selfdot.cobblemonpolymermegasfabric.util.DisableableMod;
 import com.selfdot.cobblemonpolymermegasfabric.util.MegaUtils;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import kotlin.Unit;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Rarity;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public class CobblemonPolymerMegasFabric implements ModInitializer {
+public class CobblemonPolymerMegasFabric extends DisableableMod {
 
     private static CobblemonPolymerMegasFabric INSTANCE;
     public static CobblemonPolymerMegasFabric getInstance() {
@@ -41,6 +36,8 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
     private final Set<UUID> TO_MEGA_EVOLVE_THIS_TURN = new HashSet<>();
     private final Set<UUID> HAS_MEGA_EVOLVED_THIS_BATTLE = new HashSet<>();
 
+    private Config config;
+
     public Set<UUID> getToMegaEvolveThisTurn() {
         return TO_MEGA_EVOLVE_THIS_TURN;
     }
@@ -49,9 +46,14 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
         return HAS_MEGA_EVOLVED_THIS_BATTLE;
     }
 
+    public Config getConfig() {
+        return config;
+    }
+
     @Override
     public void onInitialize() {
         INSTANCE = this;
+        config = new Config(this);
 
         CommandRegistrationEvent.EVENT.register(CommandTree::register);
         LifecycleEvent.SERVER_STARTING.register(this::onServerStarting);
@@ -81,6 +83,7 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
         }
         MegaStoneHeldItemManager.getInstance().loadMegaStoneIds();
         HeldItemProvider.INSTANCE.register(MegaStoneHeldItemManager.getInstance(), Priority.HIGH);
+        config.reload();
     }
 
     private Unit onBattleStartedPre(BattleStartedPreEvent event) {

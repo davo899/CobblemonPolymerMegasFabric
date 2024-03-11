@@ -7,6 +7,8 @@ import com.cobblemon.mod.common.api.pokemon.helditem.HeldItemManager;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
+import com.selfdot.cobblemonpolymermegasfabric.CobblemonPolymerMegasFabric;
+import com.selfdot.cobblemonpolymermegasfabric.Config;
 import com.selfdot.cobblemonpolymermegasfabric.DataKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -29,6 +31,9 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
 
     public ItemStack getMegaStoneItem(String id) {
         if (!MEGA_STONE_IDS.containsKey(id)) return ItemStack.EMPTY;
+        if (!CobblemonPolymerMegasFabric.getInstance().getConfig().getMegaStoneWhitelist().contains(id)) {
+            return ItemStack.EMPTY;
+        }
         ItemStack megaStone = new ItemStack(MegaStoneItem.ITEM);
         NbtCompound nbt = megaStone.getNbt();
         if (nbt == null) nbt = new NbtCompound();
@@ -77,7 +82,7 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
         return false;
     }
 
-    private String showdownId(Pokemon pokemon) {
+    public String showdownId(Pokemon pokemon) {
         ItemStack itemStack = pokemon.heldItem();
         NbtCompound nbt = itemStack.getNbt();
         if (nbt == null) return null;
