@@ -53,6 +53,7 @@ dependencies {
     compileOnly("net.luckperms:api:5.4")
 
     modImplementation("eu.pb4:polymer-core:0.5.19+1.20.1")
+    modImplementation("eu.pb4:polymer-resource-pack:0.5.19+1.20.1")
 }
 
 tasks.getByName<Test>("test") {

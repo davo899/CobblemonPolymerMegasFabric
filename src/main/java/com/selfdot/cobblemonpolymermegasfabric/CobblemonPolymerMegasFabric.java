@@ -13,12 +13,18 @@ import com.cobblemon.mod.common.api.pokemon.helditem.HeldItemProvider;
 import com.cobblemon.mod.common.pokemon.Species;
 import com.selfdot.cobblemonpolymermegasfabric.command.CommandTree;
 import com.selfdot.cobblemonpolymermegasfabric.item.MegaStoneHeldItemManager;
+import com.selfdot.cobblemonpolymermegasfabric.item.MegaStoneItem;
 import com.selfdot.cobblemonpolymermegasfabric.util.MegaUtils;
 import dev.architectury.event.events.common.CommandRegistrationEvent;
 import dev.architectury.event.events.common.LifecycleEvent;
+import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import kotlin.Unit;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Rarity;
 
 import java.util.HashSet;
 import java.util.List;
@@ -46,9 +52,15 @@ public class CobblemonPolymerMegasFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         INSTANCE = this;
+
         CommandRegistrationEvent.EVENT.register(CommandTree::register);
         LifecycleEvent.SERVER_STARTING.register(this::onServerStarting);
         CobblemonEvents.BATTLE_STARTED_PRE.subscribe(Priority.NORMAL, this::onBattleStartedPre);
+
+        PolymerResourcePackUtils.markAsRequired();
+        PolymerResourcePackUtils.addModAssets(DataKeys.MOD_NAMESPACE);
+        MegaStoneItem.initItem();
+        Registry.register(Registries.ITEM, MegaStoneItem.ID, MegaStoneItem.ITEM);
     }
 
     private static void registerAspectProvider(String aspect) {

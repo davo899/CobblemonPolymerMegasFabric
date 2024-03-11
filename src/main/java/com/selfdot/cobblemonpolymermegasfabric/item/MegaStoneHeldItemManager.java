@@ -29,7 +29,7 @@ public class MegaStoneHeldItemManager implements HeldItemManager {
 
     public ItemStack getMegaStoneItem(String id) {
         if (!MEGA_STONE_IDS.containsKey(id)) return ItemStack.EMPTY;
-        ItemStack megaStone = new ItemStack(Items.EMERALD);
+        ItemStack megaStone = new ItemStack(MegaStoneItem.ITEM);
         NbtCompound nbt = megaStone.getNbt();
         if (nbt == null) nbt = new NbtCompound();
         nbt.putString(DataKeys.NBT_KEY_MEGA_STONE, id);
