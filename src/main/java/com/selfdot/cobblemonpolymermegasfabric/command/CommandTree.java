@@ -1,5 +1,6 @@
 package com.selfdot.cobblemonpolymermegasfabric.command;
 
+import com.cobblemon.mod.common.command.argument.PartySlotArgumentType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -38,6 +39,18 @@ public class CommandTree {
                 CommandUtils.hasPermission(source, "selfdot.megas.megaevolve")
             )
             .executes(new MegaEvolveInBattleCommand())
+        );
+        dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>
+            literal("megaevolve")
+            .requires(source ->
+                !CobblemonPolymerMegasFabric.getInstance().isDisabled() &&
+                source.isExecutedByPlayer() &&
+                CommandUtils.hasPermission(source, "selfdot.megas.megaevolveslot")
+            )
+            .then(RequiredArgumentBuilder.<ServerCommandSource, Integer>
+                argument("pokemon", PartySlotArgumentType.Companion.partySlot())
+                .executes(new MegaEvolveSlotCommand())
+            )
         );
         dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>
             literal("getmegastone")

@@ -58,14 +58,13 @@ public class MegaUtils {
 
     public static void deMegaEvolveAll(PokemonBattle battle) {
         battle.getActors().forEach(
-            actor -> actor.getPokemonList().forEach(
-                battlePokemon -> {
-                    new FlagSpeciesFeature(DataKeys.MEGA, false).apply(battlePokemon.getOriginalPokemon());
-                    new FlagSpeciesFeature(DataKeys.MEGA_X, false).apply(battlePokemon.getOriginalPokemon());
-                    new FlagSpeciesFeature(DataKeys.MEGA_Y, false).apply(battlePokemon.getOriginalPokemon());
-                }
-            )
+            actor -> actor.getPokemonList().forEach(battlePokemon -> deMegaEvolve(battlePokemon.getOriginalPokemon()))
         );
+    }
+
+    public static void deMegaEvolve(Pokemon pokemon) {
+        Stream.of(DataKeys.MEGA, DataKeys.MEGA_X, DataKeys.MEGA_Y)
+            .forEach(megaAspect -> new FlagSpeciesFeature(megaAspect, false).apply(pokemon));
     }
 
 }
