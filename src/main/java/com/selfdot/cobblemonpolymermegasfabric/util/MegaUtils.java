@@ -22,7 +22,7 @@ public class MegaUtils {
             Stream.of(DataKeys.MEGA, DataKeys.MEGA_X, DataKeys.MEGA_Y)
                 .noneMatch(aspect -> pokemon.getSpecies().getFeatures().contains(aspect))
         ) {
-            return "This Pokémon has no Mega form.";
+            return "This species cannot mega evolve.";
         }
 
         if (!MegaStoneHeldItemManager.getInstance().isHoldingValidMegaStone(pokemon)) {
