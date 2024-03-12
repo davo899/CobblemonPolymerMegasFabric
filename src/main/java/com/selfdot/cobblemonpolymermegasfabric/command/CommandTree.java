@@ -1,11 +1,11 @@
 package com.selfdot.cobblemonpolymermegasfabric.command;
 
-import com.cobblemon.mod.common.command.argument.PartySlotArgumentType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.selfdot.cobblemonpolymermegasfabric.CobblemonPolymerMegasFabric;
 import com.selfdot.cobblemonpolymermegasfabric.item.MegaStoneHeldItemManager;
+import com.selfdot.cobblemonpolymermegasfabric.util.CommandUtils;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -21,16 +21,20 @@ public class CommandTree {
     ) {
         dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>
             literal("megaevolve")
-            .requires(ServerCommandSource::isExecutedByPlayer)
-            .executes(new MegaEvolveInBattleCommand())
-            .then(RequiredArgumentBuilder.<ServerCommandSource, Integer>
-                argument("pokemon", PartySlotArgumentType.Companion.partySlot())
-                .executes(new MegaEvolveSlotCommand())
+            .requires(source ->
+                !CobblemonPolymerMegasFabric.getInstance().isDisabled() &&
+                source.isExecutedByPlayer() &&
+                CommandUtils.hasPermission(source, "selfdot.megas.megaevolve")
             )
+            .executes(new MegaEvolveInBattleCommand())
         );
         dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>
             literal("getmegastone")
-            .requires(ServerCommandSource::isExecutedByPlayer)
+            .requires(source ->
+                !CobblemonPolymerMegasFabric.getInstance().isDisabled() &&
+                source.isExecutedByPlayer() &&
+                CommandUtils.hasPermission(source, "selfdot.megas.getmegastone")
+            )
             .then(RequiredArgumentBuilder.<ServerCommandSource, String>
                 argument("megaStone", string())
                 .suggests((context, builder) -> {
