@@ -20,6 +20,17 @@ public class CommandTree {
         CommandManager.RegistrationEnvironment registrationEnvironment
     ) {
         dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>
+            literal("megas")
+            .requires(source ->
+                !CobblemonPolymerMegasFabric.getInstance().isDisabled() &&
+                CommandUtils.hasPermission(source, "selfdot.megas.reload")
+            )
+            .then(LiteralArgumentBuilder.<ServerCommandSource>
+                literal("reload")
+                .executes(new ReloadCommand())
+            )
+        );
+        dispatcher.register(LiteralArgumentBuilder.<ServerCommandSource>
             literal("megaevolve")
             .requires(source ->
                 !CobblemonPolymerMegasFabric.getInstance().isDisabled() &&
